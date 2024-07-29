@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bao.QRcode</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header img {
+            height: 40px; /* Adjust the height as needed */
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background-color: #800080; /* Purple background */
+            color: white; /* White text */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .menu-item {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background-color: #6a0dad; /* Darker purple on hover */
+        }
+
+        .sub-menu {
+            display: none;
+            padding-left: 20px;
+        }
+
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .title {
+            font-family: 'Arial Black', sans-serif; /* Replace with the actual font you need */
+            font-size: 36px;
+            font-weight: bold;
+            text-align: left;
+            margin: 20px;
+        }
+
+        .button {
+            background-color: #800080; /* Adjust to match the purple button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .button:hover {
+            background-color: #6a0dad;
+        }
+
+        .marquee-container {
+            background-color: black;
+            color: white;
+            overflow: hidden;
+            white-space: nowrap;
+            box-sizing: border-box;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .marquee {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 10s linear infinite;
+            font-family: 'Arial Black', sans-serif; /* Replace with the actual font you need */
+            font-size: 20px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .image-container {
+            position: relative;
+        }
+
+        .image-container img {
+            width: 300px; /* Adjust the size as needed */
+            margin: 20px auto;
+        }
+
+        .section {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .section-title {
+            font-family: 'Arial Black', sans-serif; /* Replace with the actual font you need */
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .section-content {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .link {
+            color: #800080;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            width: 100%;
+            height: 2px;
+            background-color: #800080;
+            margin: 20px 0;
+        }
+
+        .subscription-section {
+            padding: 20px;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+        .subscription-title {
+            font-family: 'Arial Black', sans-serif; /* Replace with the actual font you need */
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subscription-content {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .subscribe-button {
+            background-color: #800080;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .subscribe-button:hover {
+            background-color: #6a0dad;
+        }
+
+        .subscription-message {
+            display: none;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-top: 20px;
+            color: green;
+        }
+
+        .checkmark {
+            font-size: 24px;
+            color: green;
+            display: none;
+        }
+
+        .participation-message {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-top: 20px;
+            color: green;
+        }
+
+        /* Spinner styles */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #800080;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleSubMenu(id) {
+            const subMenu = document.getElementById(id);
+            subMenu.style.display = subMenu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function subscribe() {
+            const button = document.querySelector('.subscribe-button');
+            const checkmark = document.getElementById('checkmark');
+            const message = document.getElementById('subscription-message');
+            const participationMessage = document.getElementById('participation-message');
+            const spinner = document.getElementById('spinner');
+
+            // Affiche le spinner
+            spinner.style.display = 'block';
+            button.style.display = 'none';
+
+            setTimeout(() => {
+                // Cache le spinner et affiche les messages
+                spinner.style.display = 'none';
+                checkmark.style.display = 'inline';
+                message.style.display = 'block';
+                participationMessage.style.display = 'block';
+            }, 5000); // 5000ms = 5 secondes
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <img src="Lo.png" alt="Logo"> <!-- Replace with your logo path -->
+        <div class="menu-icon" onclick="toggleMenu()">≡</div>
+        <div class="menu" id="menu">
+            <div class="menu-item" onclick="toggleSubMenu('contact')">Contact</div>
+            <div class="sub-menu" id="contact">+225 0101586518</div>
+            <div class="menu-item" onclick="toggleSubMenu('email')">Email</div>
+            <div class="sub-menu" id="email">nokuelnessemon@gmail.com</div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="title">BIENVENUE SUR BAO.QR</div>
+        <button class="button" onclick="window.location.href='https://zapek-sys.github.io/G-n-rateur-/'">Créer</button>
+        <div class="image-container">
+            <img src="Baoo.jpg" alt="Image"> <!-- Replace with your image path -->
+        </div>
+    </div>
+    <div class="marquee-container">
+        <div class="marquee">SCANNEZ ET CRÉEZ VOTRE CODE QR</div>
+    </div>
+    <div class="section">
+        <div class="section-title">CRÉEZ VOTRE CODE QR EN TOUTE SIMPLICITÉ</div>
+        <div class="section-content">
+            Nous aidons les entreprises à générer des codes QR pour leurs applications, leurs sites Web et bien plus encore. De l'amélioration des expériences numériques à la simplification des interactions avec les clients, nous proposons des solutions pour tous vos besoins en matière de codes QR.
+        </div>
+        <a href="https://d.docs.live.net/d7c2914302118583/Dokumente/Document%20(6).docx" class="link" target="_blank" rel="noopener noreferrer">À propos de Bao.Qr</a>
+        <div class="divider"></div>
+    </div>
+    <div class="subscription-section">
+            <div class="subscription-title">Abonnez-vous, afin de permettre l'accroissement des bénéfices.</div>
+        <div class="subscription-content">
+            En vous abonnant, vous contribuez à notre soutien financier en nous aidant à couvrir les frais d'hébergement web. Chaque abonnement nous permet de continuer à offrir nos services gratuitement et à améliorer constamment notre plateforme pour vous. Grâce à la rémunération que nous offre Google, nous pouvons non seulement assurer l'hébergement, mais également rémunérer les concepteurs du projet.
+        </div>
+        <button class="subscribe-button" onclick="subscribe()">S'abonner</button>
+        <div class="spinner" id="spinner"></div>
+        <div class="checkmark" id="checkmark">✅</div>
+        <div class="subscription-message" id="subscription-message">
+            Vous êtes désormais abonné! Grâce à votre abonnement, nous pouvons couvrir les frais d'hébergement web, ce qui nous permet de continuer à offrir nos services gratuitement.
+        </div>
+        <div class="participation-message" id="participation-message">
+            Participer aux frais d'hébergement
+        </div>
+    </div>
+</body>
+</html>
+   
